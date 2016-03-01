@@ -113,7 +113,7 @@ openPort( unsigned short port, unsigned int interfaceIp, bool verbose )
 bool 
 getMessage( Socket fd, char* buf, int* len,
             unsigned int* srcIp, unsigned short* srcPort,
-            bool verbose)
+            bool verbose, int flag)
 {
    assert( fd != INVALID_SOCKET );
 	
@@ -126,7 +126,7 @@ getMessage( Socket fd, char* buf, int* len,
    *len = recvfrom(fd,
                    buf,
                    originalSize,
-                   0,
+                   flag,
                    (struct sockaddr *)&from,
                    (socklen_t*)&fromLen);
 	

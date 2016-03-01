@@ -26,32 +26,59 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
+	NatType stype = stunNatType( stunServerAddr, false, 0, 0, 
+		srcPort, 0);
+
+	cout << "stunNatType " << stype << std::endl;
+	if (stype == StunTypeBlocked)
+	{
+		return -1;
+	}
+
 	StunAddress4 mappedAddr;
 	int fd = stunOpenSocket(stunServerAddr, &mappedAddr,
 		srcPort, 0,
 		false);
 
-	cout << "stunOpenSocket OK " << mappedAddr;
+  	cout << "stunOpenSocket OK " << mappedAddr << std::endl;
 
-	char data[100];
+	{
+		char c;
+		std::cin>>c;
+	}
+
+	char data[100] = {0};
 	int i = 0;
 	while (1)
 	{
 		in_addr tmp;
 		tmp.S_un.S_addr = htonl(mappedAddr.addr);
 		sprintf(data, "this is from %s %d %d", inet_ntoa(tmp), mappedAddr.port, i);
-
-		unsigned long a = inet_addr(dstIp.c_str());
-		int ip = ntohl( a );
+		
+		unsigned long ip = ntohl(inet_addr(dstIp.c_str()));
 		sendMessage(fd, data, strlen(data), ip, dstPort, false);
+		tmp.S_un.S_addr = htonl(ip);
+		printf("send to %s %d\n", inet_ntoa(tmp), dstPort);
+
+		unsigned int recvip;
+		unsigned short recvport;
+		int recvlen = sizeof(data);
+		memset(data, 0, sizeof(data));
+ 		if (getMessage(fd, data, &recvlen, &recvip, &recvport, false))
+ 		{
+ 			tmp.S_un.S_addr = htonl(recvip);
+ 			printf("recv %s from %s %d\n", data, inet_ntoa(tmp), recvport);
+		}
 
 		i++;
 	}
 
 	closesocket(fd);
 
-	char c;
-	cin>>c;
+	{
+		char c;
+		std::cin>>c;
+	}
 	return 0;
 }
 

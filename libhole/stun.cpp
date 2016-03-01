@@ -2146,7 +2146,10 @@ stunNatType( StunAddress4& dest,
       clog << "hairpin = " << respTestHairpin << endl;
       clog << "preserver port = " << respTestPreservePort << endl;
    }
-	
+
+   closesocket(myFd1);
+   closesocket(myFd2);
+
 #if 0
    // implement logic flow chart from draft RFC
    if ( respTestI )
